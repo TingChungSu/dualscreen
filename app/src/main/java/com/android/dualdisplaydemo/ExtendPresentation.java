@@ -128,8 +128,10 @@ final class ExtendPresentation extends Presentation {
                     }
                     break;
                 case 1:// change view
-                    if(myPlayListRight.isVideoPlay())
+                    if(myPlayListRight.isVideoPlay()){
+                        myPlayListRight.playLast();
                         break;
+                    }
                     if(myPlayListRight.getCurrentIndex()==0 && myPlayListLeft.getNextIndex()!=0){
                         myPlayListRight.playLast();
                         break;

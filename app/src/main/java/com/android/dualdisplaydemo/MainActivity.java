@@ -294,11 +294,15 @@ public class MainActivity extends Activity {
                 case 1:// change view
                     data = myPlayListLeft.getList().get(myPlayListLeft.getCurrentIndex());
                     if (myPlayListLeft.getNextIndex() == 0 && myPlayListRight.getCurrentIndex() != 0) {
-                        myPlayListRight.playNext();
-                        ExtendPresentation.sendMessage(1, data.getIntPauseTime());
+                        if(!myPlayListRight.isVideoPlay()) {
+                            myPlayListRight.playNext();
+                            ExtendPresentation.sendMessage(1, data.getIntPauseTime());
+                        }
                         MainActivity.sendMessage(1, data.getIntPauseTime());
                         break;
                     }
+                    if (myPlayListLeft.isVideoPlay())
+                        break;
                     if (myPlayListRight.isVideoPlay() && myPlayListLeft.getCurrentIndex() > myPlayListRight.getCurrentIndex()) {
                         break;
                     }
