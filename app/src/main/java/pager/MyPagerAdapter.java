@@ -19,13 +19,12 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import myvideoview.PlayList;
-import myvideoview.SourceData;
+import playlist.PlayList;
+import playlist.SourceData;
 
 public class MyPagerAdapter extends PagerAdapter {
 
     private List<View> mList;
-
     public int getListSize(){
         return mList.size();
     }
@@ -40,10 +39,16 @@ public class MyPagerAdapter extends PagerAdapter {
         for (SourceData data : listData) {
             String path = data.getPath();
             File file = new File(path);
+            ImageView mImageView = new ImageView(context);
+            if(!data.hasFile()){
+                if(data.getIntPauseTime()==0){
+                    mImageView.setImageResource(R.drawable.no1);
+                    mList.add(mImageView);
+                }
+                continue;
+            }
             if (!file.exists())
                 continue;
-
-            ImageView mImageView = new ImageView(context);
             if (data.isImage()) {
                 Bitmap bitmap = BitmapFactory.decodeFile(path);
                 mImageView.setImageBitmap(bitmap);
@@ -60,6 +65,8 @@ public class MyPagerAdapter extends PagerAdapter {
     @Override
     public int getCount() {
         // TODO Auto-generated method stub
+        if(mList.size()<3)
+            return mList.size();
         return Integer.MAX_VALUE;
     }
 
@@ -82,6 +89,7 @@ public class MyPagerAdapter extends PagerAdapter {
     public Object instantiateItem(ViewGroup container, int position) {
         // TODO Auto-generated method stub
         position = position % mList.size();
+        //((ViewGroup)container.getParent()).removeView(container);
         container.addView(mList.get(position));
         return mList.get(position);
     }

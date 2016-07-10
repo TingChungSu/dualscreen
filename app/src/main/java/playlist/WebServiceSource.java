@@ -1,4 +1,4 @@
-package myvideoview;
+package playlist;
 
 /**
  * Created by 鼎鈞 on 2016/7/2.

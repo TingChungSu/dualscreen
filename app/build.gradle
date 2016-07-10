@@ -24,4 +24,7 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.1.1'
     compile files('src/main/java/libs/gson-2.7.jar')
+    compile files('src/main/java/libs/ksoap2-android-assembly-2.6.0-jar-with-dependencies.jar')
+    compile files('src/main/java/libs/httpclient-osgi-4.2.1.jar')
+    compile files('src/main/java/ftpdownload/apache-commons-net.jar')
 }
