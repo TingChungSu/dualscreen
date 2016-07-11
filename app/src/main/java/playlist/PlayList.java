@@ -7,6 +7,8 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Created by 鼎鈞 on 2016/6/23.
@@ -17,6 +19,7 @@ public class PlayList {
     private int currentIndex = 0;
     private boolean boolPause = false;
     private boolean boolVideoPlay = false;
+    public final Lock _mutex = new ReentrantLock(true);
 
     public boolean isPause() {
         return boolPause;
@@ -25,6 +28,7 @@ public class PlayList {
     public boolean isVideoPlay() {
         return boolVideoPlay;
     }
+
     public void setVideo(boolean bool) {
         this.boolVideoPlay = bool;
     }
@@ -41,12 +45,21 @@ public class PlayList {
     }
 
     public void playNext() {
+        _mutex.lock();
         currentIndex++;
         if (currentIndex >= getList().size())
             currentIndex = 0;
+        _mutex.unlock();
     }
-    public void playLast(){
-        currentIndex = getList().size()-1;
+
+    public void playLast() {
+        _mutex.lock();
+        if (currentIndex == 0)
+            currentIndex = getList().size() - 1;
+        else
+            currentIndex = currentIndex - 1;
+
+        _mutex.unlock();
     }
 
     public int getCurrentIndex() {
@@ -54,8 +67,12 @@ public class PlayList {
     }
 
     public int getNextIndex() {
-        if (currentIndex + 1 >= getList().size())
+        _mutex.lock();
+        if (currentIndex + 1 >= getList().size()){
+            _mutex.unlock();
             return 0;
+        }
+        _mutex.unlock();
         return currentIndex + 1;
     }
 

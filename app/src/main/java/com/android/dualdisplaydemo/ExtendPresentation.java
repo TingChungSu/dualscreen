@@ -70,7 +70,7 @@ final class ExtendPresentation extends Presentation {
 
     private void switchToVideo() {
         if (myPager != null)
-            myPager.setVisibility(View.GONE);
+            myPager.setVisibility(View.INVISIBLE);
         if (myVideo != null)
             myVideo.setVisibility(View.VISIBLE);
     }
@@ -86,8 +86,9 @@ final class ExtendPresentation extends Presentation {
             mVideo.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 public void onCompletion(MediaPlayer mp) {
                     //switchToPager();
-                    MainActivity._mutex.lock();
                     myPlayListRight.setVideo(false);
+                    myPager.setVisibility(View.VISIBLE);
+                    MainActivity._mutex.lock();
                     if(!myPlayListLeft.isVideoPlay())
                         MainActivity.sendMessage(5, 0);
                     MainActivity._mutex.unlock();
@@ -118,7 +119,7 @@ final class ExtendPresentation extends Presentation {
                 case 0:// initial case
                     if (myPlayListRight.getList().get(myPlayListRight.getCurrentIndex()).isVedio()) {
                         setVideo(myVideo, myPlayListRight.getList().get(myPlayListRight.getCurrentIndex()).getPath());
-                        switchToVideo();
+//                        switchToVideo();
                     } else if (myPlayListRight.getList().get(myPlayListRight.getCurrentIndex()).isImage()) {
                         switchToPager();
                         AutoScrollViewPager pager = this.autoScrollViewPager.get();
@@ -137,12 +138,12 @@ final class ExtendPresentation extends Presentation {
                         break;
                     }
                     if (!myPlayListRight.getList().get(myPlayListRight.getCurrentIndex()).hasFile()) {
-                        //myPlayListRight.setPause(true);
+                        myPlayListRight.setPause(true);
                         break;
                     }
                     if (myPlayListLeft.isPause()) {
-                        //myPlayListLeft.setPause(false);
-                        //MainActivity.sendMessage(1, 0);
+                        myPlayListLeft.setPause(false);
+                        MainActivity.sendMessage(1, 0);
                     }
 
                     AutoScrollViewPager pager = this.autoScrollViewPager.get();
@@ -152,7 +153,7 @@ final class ExtendPresentation extends Presentation {
                         myPager.getScroller().setScrollDurationFactor(1);
                         if (myPlayListRight.getList().get(myPlayListRight.getCurrentIndex()).isVedio()) {
                             setVideo(myVideo, myPlayListRight.getList().get(myPlayListRight.getCurrentIndex()).getPath());
-                            switchToVideo();
+//                            switchToVideo();
                         } else if (myPlayListRight.getList().get(myPlayListRight.getCurrentIndex()).isImage()) {
                             switchToPager();
                             if (pager != null) {

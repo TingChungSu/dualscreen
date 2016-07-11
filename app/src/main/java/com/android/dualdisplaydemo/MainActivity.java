@@ -214,6 +214,8 @@ public class MainActivity extends Activity {
             mVideo.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 public void onCompletion(MediaPlayer mp) {
                     _mutex.lock();
+                    //switchToPager();
+                    myPager.setVisibility(View.VISIBLE);
                     myPlayListLeft.setVideo(false);
                     if (!myPlayListRight.isVideoPlay()) {
                         //myPlayListRight.playNext();
@@ -293,18 +295,25 @@ public class MainActivity extends Activity {
                     break;
                 case 1:// change view
                     data = myPlayListLeft.getList().get(myPlayListLeft.getCurrentIndex());
+                    if (myPlayListLeft.isVideoPlay())
+                        break;
+
+                    if (myPlayListRight.isVideoPlay() && myPlayListLeft.getNextIndex() > myPlayListRight.getCurrentIndex()) {
+                        /*if (myPlayListLeft.getNextIndex() == 0 && myPlayListRight.getCurrentIndex() == 0)
+                            ;
+                        else
+                        */
+                        break;
+                    }
                     if (myPlayListLeft.getNextIndex() == 0 && myPlayListRight.getCurrentIndex() != 0) {
-                        if(!myPlayListRight.isVideoPlay()) {
+                        if (!myPlayListRight.isVideoPlay()) {
                             myPlayListRight.playNext();
                             ExtendPresentation.sendMessage(1, data.getIntPauseTime());
                         }
-                        MainActivity.sendMessage(1, data.getIntPauseTime());
-                        break;
-                    }
-                    if (myPlayListLeft.isVideoPlay())
-                        break;
-                    if (myPlayListRight.isVideoPlay() && myPlayListLeft.getCurrentIndex() > myPlayListRight.getCurrentIndex()) {
-                        break;
+                        if (myPlayListRight.getNextIndex() != 0) {
+                            MainActivity.sendMessage(1, data.getIntPauseTime());
+                            break;
+                        }
                     }
                     myPlayListLeft.playNext();
                     data = myPlayListLeft.getList().get(myPlayListLeft.getCurrentIndex());
@@ -326,9 +335,9 @@ public class MainActivity extends Activity {
                         //if (myPlayListRight.getCurrentIndex() == 0 && myPlayListLeft.getCurrentIndex() != 0) {
                         //    MainActivity.sendMessage(1, data.getIntPauseTime());
                         //} else {
-                            myPlayListRight.playNext();
-                            ExtendPresentation.sendMessage(1, data.getIntPauseTime());
-                            MainActivity.sendMessage(1, data.getIntPauseTime());
+                        myPlayListRight.playNext();
+                        ExtendPresentation.sendMessage(1, data.getIntPauseTime());
+                        MainActivity.sendMessage(1, data.getIntPauseTime());
                         //}
                     }
                     break;
