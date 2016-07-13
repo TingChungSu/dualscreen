@@ -7,12 +7,13 @@ import android.hardware.display.DisplayManager;
 import android.media.MediaPlayer;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
-import android.os.Bundle;
-import android.os.Message;
+import android.os.Environment;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Display;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
@@ -26,6 +27,10 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import android.os.Handler;
+import android.os.Bundle;
+import android.os.Message;
+import android.os.SystemClock;
+import android.os.PowerManager;
 
 import com.google.gson.Gson;
 
@@ -38,6 +43,7 @@ import playlist.SourceData;
 import webservice.HttpConnectionUtil;
 
 public class MainActivity extends Activity {
+    private boolean tmp_light_on = true;
     public static final Lock _mutex = new ReentrantLock(true);
     public int downloadNow = 0;
     public int downloadNum = 0;
@@ -46,6 +52,7 @@ public class MainActivity extends Activity {
     public final static String strRightListPath = "/sdcard/Download/playListRight.txt";
     private final static String strConfigPath = "/sdcard/Download/config.txt";
     private final static String strHistory = "/sdcard/Download/history.txt";
+    private final static String strDownload = "/sdcard/Download/";
 
     private static int pageInterval = 5000;
     private AutoScrollViewPager myPager;
@@ -257,10 +264,64 @@ public class MainActivity extends Activity {
             return null;
     }
 
+    private void deleteAllFile(File path) {
+        if (!path.exists()) {
+            return;
+        }
+        if (path.isFile()) {
+            path.delete();
+            return;
+        }
+        File[] files = path.listFiles();
+        for (int i = 0; i < files.length; i++) {
+            deleteAllFile(files[i]);
+        }
+        path.delete();
+
+    }
+    private void createFolder(String path){
+        //make sure U can SDcard read/write
+        if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED))
+            return;
+        File dirFile = new File(path);
+        if(!dirFile.exists()){  //if folder not exitst
+            dirFile.mkdir();    //create folder
+        }
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (tmp_light_on)
+            lightOffScreen();
+        else
+            lightOnScreen();
+        tmp_light_on = !tmp_light_on;
+        return super.onTouchEvent(event);
+    }
+
+    ;
+
+    private void lightOffScreen() {
+        PowerManager manager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        PowerManager.WakeLock wl = manager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Your Tag");
+        wl.acquire();
+        wl.release();
+        WindowManager.LayoutParams params = getWindow().getAttributes();
+        params.flags ^= WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
+        params.screenBrightness = 0;
+
+        getWindow().setAttributes(params);
+
+    }
+
     private void lightOnScreen() {
         KeyguardManager keyguardManager = (KeyguardManager) getSystemService(KEYGUARD_SERVICE);
         KeyguardManager.KeyguardLock keyguardLock = keyguardManager.newKeyguardLock("");
         keyguardLock.disableKeyguard();
+        WindowManager.LayoutParams params = getWindow().getAttributes();
+        params.flags ^= WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
+        params.screenBrightness = 80;
+        getWindow().setAttributes(params);
     }
 
     public static void sendMessage(int msg, long delayTimeInMills) {
@@ -371,11 +432,9 @@ public class MainActivity extends Activity {
         }
     }
 
-
     private void setTextView(TextView tv, String str) {
         tv.setText(str);
     }
-
 
     private void setPlayListFile() {
         FileIO.writeFile(strLeftListPath, myPlayListLeft.toJson());
@@ -410,6 +469,8 @@ public class MainActivity extends Activity {
                         return;
                     }
                 }
+                deleteAllFile(new File(strDownload));
+                createFolder(strDownload);
                 FileIO.writeFile(strHistory, response);
 
 
