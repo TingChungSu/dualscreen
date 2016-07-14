@@ -78,10 +78,22 @@ public class PlayList {
 
     public PlayList() {
         myList = new ArrayList<>();
+        this.currentIndex = 0;
+        this.boolPause = false;
+        this.boolVideoPlay = false;
     }
 
+    public PlayList(PlayList playlist) {
+        this.myList = playlist.getList();
+        this.currentIndex = 0;
+        this.boolPause = false;
+        this.boolVideoPlay = false;
+    }
     public PlayList(String strJson) {
         myList = new ArrayList<>();
+        this.currentIndex = 0;
+        this.boolPause = false;
+        this.boolVideoPlay = false;
         try {
             Gson gson = new Gson();
             JsonObject jobj = new Gson().fromJson(strJson, JsonObject.class);

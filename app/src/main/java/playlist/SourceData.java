@@ -26,7 +26,7 @@ public class SourceData {
     public SourceData() {
         this.strPath = "";
         this.boolHasFile = false;
-        this.intPauseTime = 5000;
+        this.intPauseTime = 3000;
     }
 
     public SourceData(String dataType, String path) {
@@ -37,7 +37,7 @@ public class SourceData {
 
         this.strPath = path;
         this.boolHasFile = true;
-        this.intPauseTime = 5000;
+        this.intPauseTime = 3000;
     }
 
     public SourceData(String dataType, String path, String lcd) {
@@ -49,7 +49,7 @@ public class SourceData {
         this.strPath = path;
         this.strLCDNo = lcd;
         this.boolHasFile = true;
-        this.intPauseTime = 5000;
+        this.intPauseTime = 3000;
     }
     public SourceData(String dataType, String path, String lcd,int time) {
         if (dataType.trim().toLowerCase().equals("ani"))

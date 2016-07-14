@@ -9,5 +9,4 @@ import android.telephony.TelephonyManager;
  * Created by 鼎鈞 on 2016/7/8.
  */
 public class Utility {
-
 }
