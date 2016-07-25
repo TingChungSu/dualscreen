@@ -25,7 +25,8 @@ import playlist.SourceData;
 public class MyPagerAdapter extends PagerAdapter {
 
     private List<View> mList;
-    public int getListSize(){
+
+    public int getListSize() {
         return mList.size();
     }
 
@@ -36,12 +37,13 @@ public class MyPagerAdapter extends PagerAdapter {
         LinearLayout.LayoutParams mParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT);
-        for (SourceData data : listData) {
+        for (int i = 0; i < listData.size(); i++) {
+            SourceData data = listData.get(i);
             String path = data.getPath();
             File file = new File(path);
             ImageView mImageView = new ImageView(context);
-            if(!data.hasFile()){
-                if(data.getIntPauseTime()==0){
+            if (!data.hasFile()) {
+                if (data.getIntPauseTime() == 0) {
                     mImageView.setImageResource(R.drawable.no1);
                     mList.add(mImageView);
                 }
@@ -55,17 +57,30 @@ public class MyPagerAdapter extends PagerAdapter {
                 mImageView.setLayoutParams(mParams);
                 mList.add(mImageView);
             } else if (data.isVedio()) {
-                mImageView.setImageResource(R.drawable.no1);
-                mList.add(mImageView);
+                if (i > 0 && listData.get(i - 1).isImage()) {
+                    Bitmap bitmap = BitmapFactory.decodeFile(listData.get(i - 1).getPath());
+                    mImageView.setImageBitmap(bitmap);
+                    mImageView.setLayoutParams(mParams);
+                    mList.add(mImageView);
+                } else if (i == 0 && listData.size() > 1 && listData.get(1).isImage()) {
+                    Bitmap bitmap = BitmapFactory.decodeFile(listData.get(1).getPath());
+                    mImageView.setImageBitmap(bitmap);
+                    mImageView.setLayoutParams(mParams);
+                    mList.add(mImageView);
+                } else {
+                    mImageView.setImageResource(R.drawable.no1);
+                    mList.add(mImageView);
+                }
             }
-            //mImageView.setBackgroundResource(list.get(i));
         }
+        //mImageView.setBackgroundResource(list.get(i));
     }
+
 
     @Override
     public int getCount() {
         // TODO Auto-generated method stub
-        if(mList.size()<3)
+        if (mList.size() < 3)
             return mList.size();
         return Integer.MAX_VALUE;
     }

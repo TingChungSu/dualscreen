@@ -16,6 +16,7 @@ import java.lang.ref.WeakReference;
 import pager.AutoScrollViewPager;
 import pager.MyPagerAdapter;
 import playlist.PlayList;
+import playlist.SourceData;
 
 /**
  * Created by 鼎鈞 on 2016/7/7.
@@ -62,6 +63,8 @@ final class ExtendPresentation extends Presentation {
     }
 
     private void switchToPager() {
+        if (MainActivity.isClose)
+            return;
         if (myPager != null)
             myPager.setVisibility(View.VISIBLE);
         if (myVideo != null)
@@ -69,6 +72,8 @@ final class ExtendPresentation extends Presentation {
     }
 
     private void switchToVideo() {
+        if (MainActivity.isClose)
+            return;
         if (myPager != null)
             myPager.setVisibility(View.INVISIBLE);
         if (myVideo != null)
@@ -89,7 +94,7 @@ final class ExtendPresentation extends Presentation {
                     myPlayListRight.setVideo(false);
                     myPager.setVisibility(View.VISIBLE);
                     MainActivity._mutex.lock();
-                    if(!myPlayListLeft.isVideoPlay())
+                    if (!myPlayListLeft.isVideoPlay())
                         MainActivity.sendMessage(5, 0);
                     MainActivity._mutex.unlock();
 
@@ -117,6 +122,8 @@ final class ExtendPresentation extends Presentation {
 
             switch (msg.what) {
                 case 0:// initial case
+                    if(myPlayListRight==null)
+                        return;
                     if (myPlayListRight.getList().get(myPlayListRight.getCurrentIndex()).isVedio()) {
                         setVideo(myVideo, myPlayListRight.getList().get(myPlayListRight.getCurrentIndex()).getPath());
 //                        switchToVideo();
@@ -129,11 +136,14 @@ final class ExtendPresentation extends Presentation {
                     }
                     break;
                 case 1:// change view
-                    if(myPlayListRight.isVideoPlay()){
+                    if (MainActivity.isClose) {
+                        return;
+                    }
+                    if (myPlayListRight.isVideoPlay()) {
                         myPlayListRight.playLast();
                         break;
                     }
-                    if(myPlayListRight.getCurrentIndex()==0 && myPlayListLeft.getNextIndex()!=0){
+                    if (myPlayListRight.getCurrentIndex() == 0 && myPlayListLeft.getNextIndex() != 0) {
                         myPlayListRight.playLast();
                         break;
                     }
@@ -161,6 +171,17 @@ final class ExtendPresentation extends Presentation {
                             }
                         }
                     }
+                    break;
+                case 5:// light on
+                    SourceData data = myPlayListRight.getList().get(myPlayListRight.getCurrentIndex());
+                    if (data.isVedio()) {
+                        setVideo(myVideo, data.getPath());
+                        switchToVideo();
+                    }
+                    break;
+                case 7:// light off
+                    myPager.setVisibility(View.GONE);
+                    myVideo.setVisibility(View.GONE);
                     break;
                 default:
                     break;
